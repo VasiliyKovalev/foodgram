@@ -4,7 +4,7 @@ from django.http import FileResponse
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from rest_framework import filters, status, viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -24,10 +24,10 @@ from .serializers import (
 )
 from .viewsets import IngredientTagViewSet
 from recipes.models import (
-    Favorite, Ingredient, IngredientInRecipe, Recipe,
-    RecipeInShoppingCart, Subscription, Tag
+    Favorite, Ingredient, IngredientInRecipe,
+    Recipe, RecipeInShoppingCart, Tag
 )
-from users.models import User
+from users.models import Subscription, User
 
 
 class UserViewSet(UserViewSet):
@@ -41,6 +41,12 @@ class UserViewSet(UserViewSet):
             user=self.request.user,
             following=get_object_or_404(User, id=id)
         ).exists()
+
+    def get_subscription_context(self, request):
+        return {
+            'request': request,
+            'recipes_limit': request.query_params.get('recipes_limit'),
+        }
 
     @action(
         detail=False,
@@ -71,8 +77,7 @@ class UserViewSet(UserViewSet):
     )
     def subscriptions(self, request):
         subscriptions = request.user.subscriptions.all()
-        recipes_limit = request.query_params.get('recipes_limit')
-        context = {'request': request, 'recipes_limit': recipes_limit}
+        context = self.get_subscription_context(request)
         pages = self.paginate_queryset(subscriptions)
         if pages is not None:
             serializer = SubscribeSerializer(
@@ -99,8 +104,9 @@ class UserViewSet(UserViewSet):
                 user=user,
                 following=following
             )
-            serializer = SubscribeSerializer(subscription)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            context = self.get_subscription_context(request)
+            serializer = SubscribeSerializer(subscription, context=context)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if not self.check_user_in_subscription(id):
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -119,6 +125,7 @@ class TagViewSet(IngredientTagViewSet):
 
 class IngredientViewSet(IngredientTagViewSet):
     """Вьюсет для модели Ingredient."""
+    queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     filter_backends = (IngredientNameSearchFilter,)
     search_fields = ('^name',)
@@ -147,7 +154,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         model.objects.create(user=request.user, recipe=self.get_recipe())
         serializer = RecipeShortInformation(self.get_recipe())
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_recipe_from_model(self, request, model):
         if not self.check_recipe_in_model(model):

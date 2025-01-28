@@ -60,3 +60,28 @@ class User(AbstractUser):
 
     def is_admin(self):
         return self.is_superuser or (self.role == self.UserRole.ADMIN)
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='subscriptions')
+    following = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='followings')
+
+    class Meta:
+        ordering = ('user',)
+        verbose_name = 'подписка пользователя'
+        verbose_name_plural = 'Подписки пользователя'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'following'],
+                name='unique_user_following'
+            ),
+            models.CheckConstraint(
+                check=~models.Q(user=models.F('following')),
+                name='user_not_following'
+            )
+        ]
+
+    def __str__(self):
+        return f'"{self.user.username}" на "{self.following.username}"'

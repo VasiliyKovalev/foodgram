@@ -107,7 +107,7 @@ class Recipe(models.Model):
         verbose_name_plural = 'Рецепты'
 
     def __str__(self):
-        return f'Рецепт "{self.name}" от пользователя "{self.author.name}"'
+        return f'Рецепт "{self.name}" от пользователя "{self.author.username}"'
 
 
 class IngredientInRecipe(models.Model):
@@ -159,7 +159,7 @@ class Favorite(models.Model):
         verbose_name_plural = 'Рецепты в избранном'
 
     def __str__(self):
-        return f'Избранное пользователя "{self.user.username}"'
+        return f'"{self.recipe.name}" в избранном "{self.user.username}"'
 
 
 class RecipeInShoppingCart(models.Model):
@@ -184,25 +184,3 @@ class RecipeInShoppingCart(models.Model):
             f'Рецепт "{self.recipe.name}" в списке '
             f'покупок пользователя: "{self.user.username}"'
         )
-
-
-class Subscription(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='subscriptions')
-    following = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='followings')
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'following'],
-                name='unique_user_following'
-            ),
-            models.CheckConstraint(
-                check=~models.Q(user=models.F('following')),
-                name='user_not_following'
-            )
-        ]
-
-    def __str__(self):
-        return f'Подписки пользователя "{self.user.username}"'
