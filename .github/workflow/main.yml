@@ -174,4 +174,4 @@ jobs:
         token: ${{ secrets.TELEGRAM_TOKEN }}
         message: >
           ${{ github.actor }} сделал push c сообщением: ${{ github.event.commits[0].message }}. 
-          Ссылка на commit: https://github.com/${{ github.repository }}/commit/${{ github.sha }}.
+          Ссылка на commit: https://github.com/${{ github.repository }}/commit/${{ github.sha }}!
