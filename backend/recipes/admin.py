@@ -62,7 +62,7 @@ class FavoriteAdmin(admin.ModelAdmin):
         'id',
         'user',
         'recipe',
-   )
+    )
     list_editable = (
         'user',
         'recipe',
