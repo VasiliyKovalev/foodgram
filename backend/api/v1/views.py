@@ -1,6 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from django_short_url.views import get_surl
-from django.http import FileResponse
+from django.http import HttpResponse
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
@@ -211,7 +211,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 name, measurement_unit, amount = ingredient.values()
                 shopping_cart.append(f'• {name} - {amount} {measurement_unit}')
             shopping_cart = '\n'.join(shopping_cart)
-        response = FileResponse(shopping_cart)
+        response = HttpResponse(shopping_cart, content_type='text/plain')
         response['Content-Disposition'] = (
             'attachment; filename="my_shopping_cart.txt"')
         return response
