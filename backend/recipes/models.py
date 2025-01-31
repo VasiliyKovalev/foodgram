@@ -113,7 +113,6 @@ class Recipe(models.Model):
         max_length=MAX_LENGTH_SHORT_LINK,
         unique=True,
         blank=True,
-        null=True,
     )
 
     class Meta:
