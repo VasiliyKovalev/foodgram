@@ -112,7 +112,8 @@ class Recipe(models.Model):
     short_link = models.CharField(
         max_length=MAX_LENGTH_SHORT_LINK,
         unique=True,
-        blank=True
+        blank=True,
+        null=True,
     )
 
     class Meta:
