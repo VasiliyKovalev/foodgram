@@ -11,7 +11,6 @@ class UserAdmin(admin.ModelAdmin):
         'first_name',
         'last_name',
         'avatar',
-        'role',
     )
     list_editable = (
         'email',
@@ -19,7 +18,6 @@ class UserAdmin(admin.ModelAdmin):
         'first_name',
         'last_name',
         'avatar',
-        'role',
     )
     search_fields = ('email', 'username',)
 

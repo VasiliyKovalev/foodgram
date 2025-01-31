@@ -29,7 +29,14 @@ class IngredientAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
+class IngredientInRecipeInline(admin.TabularInline):
+    model = IngredientInRecipe
+    min_num = 1
+    extra = 0
+
+
 class RecipeAdmin(admin.ModelAdmin):
+    inlines = (IngredientInRecipeInline,)
     list_display = (
         'name',
         'author',
@@ -40,7 +47,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
     @admin.display(description="Количество добавлений в избранное")
     def count_is_favorited(self, obj):
-        return obj.favorite_users.count()
+        return obj.favorites.count()
 
 
 class IngredientInRecipeAdmin(admin.ModelAdmin):

@@ -1,10 +1,9 @@
-from distutils.util import strtobool
-
 from django_filters import (
-    FilterSet, ModelMultipleChoiceFilter, TypedChoiceFilter)
+    AllValuesMultipleFilter, FilterSet, TypedChoiceFilter)
+from distutils.util import strtobool
 from rest_framework.filters import SearchFilter
 
-from recipes.models import Recipe, Tag
+from recipes.models import Recipe
 
 
 RECIPE_FILTER_CHOICES = (
@@ -24,11 +23,7 @@ class RecipeFilter(FilterSet):
         method='filter_is_in_shopping_cart',
         coerce=strtobool
     )
-    tags = ModelMultipleChoiceFilter(
-        field_name='tags__slug',
-        queryset=Tag.objects.all(),
-        to_field_name='slug',
-    )
+    tags = AllValuesMultipleFilter(field_name='tags__slug',)
 
     class Meta:
         model = Recipe
@@ -36,12 +31,12 @@ class RecipeFilter(FilterSet):
 
     def filter_is_favorited(self, queryset, name, value):
         if value and self.request.user.is_authenticated:
-            return queryset.filter(favorite_users__user=self.request.user)
+            return queryset.filter(favorites__user=self.request.user)
         return queryset
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
         if value and self.request.user.is_authenticated:
-            return queryset.filter(users_shopping_cart__user=self.request.user)
+            return queryset.filter(shopping_cart__user=self.request.user)
         return queryset
 
 

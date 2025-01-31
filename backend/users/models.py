@@ -12,9 +12,6 @@ MAX_LENGTH_EMAIL = 254
 
 class User(AbstractUser):
     """Пользовательская модель User."""
-    class UserRole(models.TextChoices):
-        USER = 'user'
-        ADMIN = 'admin'
     email = models.EmailField(
         unique=True,
         verbose_name='Электронная почта пользователя',
@@ -41,14 +38,8 @@ class User(AbstractUser):
         blank=True,
         null=True,
     )
-    role = models.CharField(
-        max_length=MAX_LENGTH_USER_ROLE,
-        choices=UserRole.choices,
-        default=UserRole.USER,
-        verbose_name='Пользовательская роль',
-    )
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ('username',)
+    REQUIRED_FIELDS = ('username', 'first_name', 'last_name',)
 
     class Meta:
         ordering = ('username',)
@@ -57,9 +48,6 @@ class User(AbstractUser):
 
     def __str__(self):
         return f'Пользователь "{self.username}"'
-
-    def is_admin(self):
-        return self.is_superuser or (self.role == self.UserRole.ADMIN)
 
 
 class Subscription(models.Model):

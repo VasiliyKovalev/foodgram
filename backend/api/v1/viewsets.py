@@ -1,7 +1,7 @@
 from rest_framework import mixins, viewsets
 
 
-class IngredientTagViewSet(
+class ListRetrieveViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet
