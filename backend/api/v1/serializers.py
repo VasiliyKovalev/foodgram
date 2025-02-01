@@ -178,15 +178,18 @@ class RecipeSerializer(serializers.ModelSerializer):
                 field_errors['ingredients'] = (
                     'Проверьте ингредиенты на дубликаты!')
 
-        if not value.get('image'):
-            field_errors['image'] = 'Необходимо добавить изображение!'
-
         if field_errors:
             raise serializers.ValidationError(field_errors)
         return value
 
-    def add_tags_and_ingredients_to_recipe(self, recipe, tags, ingredients):
-        self.is_valid(raise_exception=True)
+    def validate_image(self, value):
+        if not value:
+            raise serializers.ValidationError(
+                'Необходимо добавить изображение!')
+        return value
+
+    @staticmethod
+    def add_tags_and_ingredients_to_recipe(recipe, tags, ingredients):
         recipe.tags.set(tags)
         all_ingredients = []
         for ingredient in ingredients:
@@ -277,25 +280,13 @@ class FavoriteSerializer(serializers.ModelSerializer):
             instance.recipe, context=self.context).data
 
 
-class SubscriptionSerializer(serializers.ModelSerializer):
+class SubscriptionSerializer(UserSerializer):
     "Сериализатор для модели Subscription."
-    is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
-    class Meta:
-        model = User
-        fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'is_subscribed',
-            'recipes',
-            'recipes_count',
-            'avatar'
-        )
+    class Meta(UserSerializer.Meta):
+        fields = UserSerializer.Meta.fields + ('recipes', 'recipes_count',)
         read_only_fields = (
             'email',
             'username',
@@ -321,9 +312,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             'request').query_params.get('recipes_limit')
         if recipes_limit:
             try:
-                return RecipeShortInformation(
-                    recipes[:int(recipes_limit)], many=True
-                ).data
+                recipes = recipes[:int(recipes_limit)]
             except ValueError:
                 pass
         return RecipeShortInformation(recipes, many=True).data

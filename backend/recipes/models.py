@@ -1,4 +1,5 @@
 import random
+from string import ascii_letters
 
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
@@ -16,8 +17,6 @@ MIN_COOKING_TIME = 1
 MAX_COOKING_TIME = 32000
 MIN_AMOUNT_INGREDIENTS = 1
 MAX_AMOUNT_INGREDIENTS = 32000
-SYMBOLS_FOR_SHORT_LINK = (
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789')
 
 
 class Tag(models.Model):
@@ -124,11 +123,10 @@ class Recipe(models.Model):
     def generate_short_link(self):
         while True:
             short_link = ''.join(
-                random.choices(SYMBOLS_FOR_SHORT_LINK, k=MAX_LENGTH_SHORT_LINK)
+                random.choices(ascii_letters, k=MAX_LENGTH_SHORT_LINK)
             )
             if not Recipe.objects.filter(short_link=short_link).exists():
-                break
-        return short_link
+                return short_link
 
     def save(self, *args, **kwargs):
         if not self.short_link:

@@ -24,14 +24,12 @@ from .serializers import (
     UserSerializer
 )
 from .viewsets import ListRetrieveViewSet
+from foodgram_backend.settings import PREFIX_SHORT_LINK_RECIPE
 from recipes.models import (
     Favorite, Ingredient, IngredientInRecipe,
     Recipe, RecipeInShoppingCart, Tag
 )
 from users.models import Subscription, User
-
-
-PREFIX_SHORT_LINK_RECIPE = 's/'
 
 
 class UserViewSet(UserViewSet):
@@ -43,6 +41,7 @@ class UserViewSet(UserViewSet):
 
     @action(
         detail=False,
+        methods=('get',),
         permission_classes=(IsAuthenticated,)
     )
     def me(self, request, *args, **kwargs):
@@ -66,6 +65,7 @@ class UserViewSet(UserViewSet):
 
     @action(
         detail=False,
+        methods=('get',),
         permission_classes=(IsAuthenticated,)
     )
     def subscriptions(self, request):
@@ -163,6 +163,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True,
+        methods=('get',),
         url_path='get-link',
     )
     def get_link(self, request, id=None):
@@ -187,6 +188,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=False,
+        methods=('get',),
         permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request, id=None):

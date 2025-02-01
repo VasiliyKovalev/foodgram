@@ -16,6 +16,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
+BD_IS_SQLITE = os.getenv('BD_IS_SQLITE', 'False') == 'True'
+
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(', ')
 
 
@@ -66,7 +68,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
 
 
-if DEBUG:
+if BD_IS_SQLITE:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -134,6 +136,8 @@ REST_FRAMEWORK = {
     ],
 }
 
+PAGE_SIZE = 6
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
@@ -150,3 +154,5 @@ DJOSER = {
         'current_user': 'api.v1.serializers.UserSerializer',
     },
 }
+
+PREFIX_SHORT_LINK_RECIPE = 's/'

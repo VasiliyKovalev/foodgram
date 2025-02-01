@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.urls import include, path, re_path
 
-from api.v1.views import PREFIX_SHORT_LINK_RECIPE, redirect_to_recipe
+from api.v1.views import redirect_to_recipe
+from foodgram_backend.settings import PREFIX_SHORT_LINK_RECIPE
 
 
 urlpatterns = [
