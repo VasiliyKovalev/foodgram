@@ -60,10 +60,6 @@ docker compose exec backend python manage.py migrate
 docker compose exec backend python manage.py collectstatic
 ```
 
-```
-docker compose exec backend cp -r /app/collected_static/. /backend_static/static/
-```
-
 ### После запуска проект будет доступен по адресу:
 http://127.0.0.1:8000/
 
