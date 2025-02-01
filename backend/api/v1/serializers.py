@@ -295,17 +295,6 @@ class SubscriptionSerializer(UserSerializer):
             'avatar'
         )
 
-    def get_is_subscribed(self, obj):
-        request = self.context.get('request')
-        return bool(
-            request
-            and request.user.is_authenticated
-            and Subscription.objects.filter(
-                user=request.user,
-                following=obj
-            ).exists()
-        )
-
     def get_recipes(self, obj):
         recipes = Recipe.objects.filter(author=obj)
         recipes_limit = self.context.get(
