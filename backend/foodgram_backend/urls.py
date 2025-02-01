@@ -9,7 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
     re_path(
-        fr'{PREFIX_SHORT_LINK_RECIPE}(?P<short_link>[a-zA-Z0-9]+)/',
+        fr'{PREFIX_SHORT_LINK_RECIPE}(?P<short_link>[a-zA-Z]+)/',
         redirect_to_recipe
     ),
 ]
