@@ -26,9 +26,7 @@ from .serializers import (
 from .viewsets import ListRetrieveViewSet
 from foodgram_backend.settings import PREFIX_SHORT_LINK_RECIPE
 from recipes.models import (
-    Favorite, Ingredient, IngredientInRecipe,
-    Recipe, RecipeInShoppingCart, Tag
-)
+    Favorite, Ingredient, Recipe, RecipeInShoppingCart, Tag)
 from users.models import Subscription, User
 
 
@@ -196,12 +194,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipes = request.user.shopping_cart.all().values('recipe')
         if recipes:
             shopping_cart = []
-            ingredients = IngredientInRecipe.objects.filter(
-                recipe__in=recipes
+            ingredients = Ingredient.objects.filter(
+                recipes__in=recipes
             ).values(
-                'name__name',
-                'name__measurement_unit',
-            ).annotate(amount=Sum('amount'))
+                'name',
+                'ingredientinrecipe__name__measurement_unit',
+            ).annotate(amount=Sum('ingredientinrecipe__amount'))
+
             for ingredient in ingredients:
                 name, measurement_unit, amount = ingredient.values()
                 shopping_cart.append(f'• {name} - {amount} {measurement_unit}')
